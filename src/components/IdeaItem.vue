@@ -10,7 +10,8 @@
         :class="{hide: !titleFocus}"
         :value="title"
         v-on:blur="editIdeaBlur(id, 'title')"
-        refs="titleInput"
+        v-model="newTitle"
+        ref="titleInput"
         autofocus />
     </div>
     <div class="panel-body body">
@@ -23,10 +24,10 @@
       <textarea
         class="not-static"
         :class="{hide: !bodyFocus}"
-        :value="body"
         :maxlength="ideaLength"
         v-on:blur="editIdeaBlur(id, 'body')"
-        refs="bodyInput"
+        v-model="newBody"
+        ref="bodyInput"
         autofocus></textarea>
     </div>
     <small class="date">{{ outputDate(date) }}</small>
@@ -41,7 +42,9 @@ export default {
   data () {
     return {
       titleFocus: false,
-      bodyFocus: false
+      bodyFocus: false,
+      newTitle: this.title,
+      newBody: this.body
     }
   },
   methods: {
@@ -52,20 +55,15 @@ export default {
       } else if (type === 'body') {
         i.bodyFocus = !i.bodyFocus
       }
-      console.log(this.$refs.bodyInput)
     },
     editIdeaBlur (id, type) {
       var i = this
-      var readOnly = document.querySelector('.idea-' + id + ' .' + type + ' .static')
-      var writable = document.querySelector('.idea-' + id + ' .' + type + ' .not-static')
-      readOnly.classList.toggle('hide')
-      writable.classList.toggle('hide')
-      switch (writable.value.trim()) {
-        case (readOnly.textContent.trim()):
-          break
-        default:
-          i.editPost(id, type, writable.value)
-          break
+      if (type === 'title') {
+        i.titleFocus = !i.titleFocus
+        i.editPost(id, type, i.newTitle)
+      } else if (type === 'body') {
+        i.bodyFocus = !i.bodyFocus
+        i.editPost(id, type, i.newBody)
       }
     }
   }
